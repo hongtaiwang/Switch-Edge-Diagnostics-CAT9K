@@ -6,7 +6,8 @@ Telnet to target switch and generate the network topo image automatically. When 
 <host_addr> <username> <password> <timeinterval - sec>
 ```
   
-type in username if any 
+type in username if any.
+
 Will show static image if timeinterval is less than or equal to 0.
 
 
