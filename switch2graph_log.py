@@ -1,4 +1,5 @@
 import sys
+import os
 import telnetlib
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import datetime
 import time
 
 
-def readCdpInfo(host, psw, returnHostName=False):
+def readCdpInfo(host, psw, userName=None, returnHostName=False):
     # connect to switch
     while True:
         try:
@@ -17,19 +18,29 @@ def readCdpInfo(host, psw, returnHostName=False):
             time.sleep(2)
             pass
 
+    # input username, if any
+    if userName is not None:
+        tn.read_until("Username: ".encode('ascii'))
+        userName += '\n'
+        tn.write(userName.encode('ascii'))
+
     # input password
     password = psw + '\n'
     tn.read_until("Password: ".encode('ascii'))
     tn.write(password.encode('ascii'))
 
-    # get host name
-    hostName = tn.read_until(">".encode('ascii')).decode().split('\r\n')[1].split('>')[0]
+    if userName is None:
+        # get host name
+        hostName = tn.read_until(">".encode('ascii')).decode().split('\r\n')[1].split(">")[0]
 
-    # enable
-    tn.write("enable\n".encode('ascii'))
-    tn.read_until("Password: ".encode('ascii'))
-    tn.write(password.encode('ascii'))
-    tn.read_until((hostName + "#").encode('ascii'))
+        # enable
+        tn.write("enable\n".encode('ascii'))
+        tn.read_until("Password: ".encode('ascii'))
+        tn.write(password.encode('ascii'))
+        tn.read_until((hostName + "#").encode('ascii'))
+    else:
+        # get host name
+        hostName = tn.read_until("#".encode('ascii')).decode().split('\r\n')[1].split("#")[0]
 
     # term len 0
     tn.write("term len 0\n".encode('ascii'))
@@ -135,9 +146,15 @@ def printInfo(edges, edges_up=[], edges_down=[], fileOuput=False):
 # input as <host> <password> <timeinterval - sec>(static if 0)
 def main():
     host = sys.argv[1]
-    password = sys.argv[2]
-    timeIntv = int(sys.argv[3])
-    cdpLog = readCdpInfo(host, password)
+    userName = None
+    if len(sys.argv) > 4:
+        userName = sys.argv[2]
+        password = sys.argv[3]
+        timeIntv = int(sys.argv[4])
+    else:
+        password = sys.argv[2]
+        timeIntv = int(sys.argv[3])
+    cdpLog = readCdpInfo(host, password, userName)
     cdpInfo = parseCdpInfo(cdpLog)
     edges, edge_attr = processEdges(cdpInfo)
 
@@ -152,7 +169,7 @@ def main():
     nx.set_edge_attributes(G, edge_attr)
 
     # drawImage(G)
-    pos = nx.spring_layout(G)
+    pos = nx.planar_layout(G)
     nx.draw(G, pos, with_labels=True, font_weight='bold')
     nx.draw_networkx_edge_labels(G, pos)
 
@@ -161,34 +178,19 @@ def main():
     fig.set_size_inches(18.5, 10.5)
     fig.savefig('cdp_image_log.png', dpi=100)
     printInfo(edges, fileOuput=True)
+    plt.clf()
 
     # dynamic with time interval
     if timeIntv > 0:
         while True:
             time.sleep(timeIntv)
-            cdpLog_cmp = readCdpInfo(host, password)
-            cdpInfo_cmp = parseCdpInfo(cdpLog_cmp)
+            cdpLog_cmp = readCdpInfo(host, password, userName)
+            try:
+                cdpInfo_cmp = parseCdpInfo(cdpLog_cmp)
+            except:
+                print(cdpLog_cmp)
             edges_cmp, edge_attr_cmp = processEdges(cdpInfo_cmp)
             edges_up, edges_down, edge_dict = updateEdges(edges, edges_cmp, edge_dict)
-            # if len(edges_down) == 0 and len(edges_up) == 0:
-            # continue
-
-            nx.draw(G, pos, with_labels=True, font_weight='bold')
-            nx.draw_networkx_edge_labels(G, pos)
-            if len(edges_up):
-                for e in edges_up:
-                    G.add_edge(e[0], e[1])
-                    edge_attr[e[0], e[1]] = {e[2]: e[3]}
-                nx.set_edge_attributes(G, edge_attr)
-                nx.draw_networkx_edges(G, pos, edgelist=edges_up, width=4, edge_color='b')
-                pos = nx.spring_layout(G)
-            if len(edges_down):
-                nx.draw_networkx_edges(G, pos, edgelist=edges_down, width=4, edge_color='r')
-                # pos = nx.spring_layout(G)
-
-            fig = plt.gcf()
-            fig.set_size_inches(18.5, 10.5)
-            fig.savefig('cdp_image_log.png', dpi=100)
 
             # print link info
             printInfo(edges, edges_up, edges_down, True)
@@ -196,6 +198,36 @@ def main():
             # update edge info
             edges = edges_cmp
             edge_attr = edge_attr_cmp
+
+            if len(edges_down) == 0 and len(edges_up) == 0:
+                continue
+
+            if len(edges_up):
+                for e in edges_up:
+                    G.add_edge(e[0], e[1])
+                    edge_attr[e[0], e[1]] = {e[2]: e[3]}
+                nx.set_edge_attributes(G, edge_attr)
+                pos = nx.planar_layout(G)
+                nx.draw(G, pos, with_labels=True, font_weight='bold')
+                nx.draw_networkx_edge_labels(G, pos)
+                nx.draw_networkx_edges(G, pos, edgelist=edges_up, width=4, edge_color='b')
+            if len(edges_down):
+                pos = nx.planar_layout(G)
+                nx.draw(G, pos, with_labels=True, font_weight='bold')
+                nx.draw_networkx_edge_labels(G, pos)
+                nx.draw_networkx_edges(G, pos, edgelist=edges_down, width=4, edge_color='r')
+
+            fig = plt.gcf()
+            fig.set_size_inches(18.5, 10.5)
+
+            fileName = 'cdp_image_log.png'
+
+            # delete previous file if it exists
+            if os.path.exists(fileName):
+                os.remove(fileName)
+
+            fig.savefig('cdp_image_log.png', dpi=100)
+            plt.clf()
 
 
 if __name__ == "__main__":
