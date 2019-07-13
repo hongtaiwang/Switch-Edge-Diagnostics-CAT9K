@@ -8,7 +8,7 @@ Telnet to target switch and generate the network topo image automatically. When 
   
 type in username if any.
 
-Will show static image if timeinterval is less than or equal to 0.
+will show static image if timeinterval is less than or equal to 0.
 
 
 ### repo contains a sample topo graph and a log output
