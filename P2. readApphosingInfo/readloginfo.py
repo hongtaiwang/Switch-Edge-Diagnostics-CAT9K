@@ -1,6 +1,7 @@
 import sys
 import telnetlib
 import time
+import re
 
 
 def connectHost(host, psw, userName=None, returnHostName=False):
@@ -54,9 +55,9 @@ def readIoxInfo(tn, hostName):
     ioxLog = tn.read_until((hostName + "#").encode('ascii')).decode()
     ioxInfo = dict()
     for info in ioxLog.split('\r\n')[4:]:
-        if info is '':
+        if len(info) < 1:
             break
-        ioxInfo[info.split(' : ')[0]] = info.split(' : ')[1].strip()
+        ioxInfo[info.split(' :')[0]] = info.split(' :')[1].strip()
     return ioxInfo
 
 
@@ -69,12 +70,20 @@ def checkRunning(ioxInfo):
             return False
     return True
 
-# get app-hosting list (for future use)
-#def readAppList(tn, hostName):
-#    # sh app list
-#    tn.write("sh app-hosting list\n".encode('ascii'))
-#    appList = tn.read_until((hostName + "#").encode('ascii')).decode()
-#    return appList
+
+# get app-hosting list, will return empty dict if no app on the switch
+def readAppList(tn, hostName):
+    # sh app list
+    tn.write("sh app-hosting list\n".encode('ascii'))
+    appList = tn.read_until((hostName + "#").encode('ascii')).decode()
+    appListInfo = dict()
+    if len(appList.split('\r\n')) < 5:
+        return appListInfo
+    for i in appList.split('\r\n')[3:]:
+        if len(i) < 1:
+            break
+        appListInfo[re.sub(' +', ' ',i).split(' ')[0].strip()] = re.sub(' +', ' ',i).split(' ')[1].strip()
+    return appListInfo
 
 
 # get app-hosting resource
@@ -115,10 +124,7 @@ def main():
     tn, hostName = connectHost(host, password, userName)
 
     #get app-hosting info
-#    appInfo = readAppList(tn, hostName)
-#    print("==========app-hosting list==========")
-#    print(appInfo)
-#    print("====================================\n")
+    appListInfo = readAppList(tn, hostName)
     resInfo = readAppRes(tn, hostName)
     ioxInfo = readIoxInfo(tn, hostName)
 
@@ -126,6 +132,11 @@ def main():
     tn.close()
 
     #use any info if needed
+
+    print("==========app-hosting list==========")
+    print(appListInfo)
+    print("====================================\n")
+
     cpuQuota = resInfo['CPU'][0]
     cpuAvail = resInfo['CPU'][1]
 
