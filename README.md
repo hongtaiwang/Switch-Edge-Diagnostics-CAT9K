@@ -16,7 +16,7 @@ will show static image if timeinterval is less than or equal to 0.
 ## part 2. app-hosting logs
 ### Input parameters: (install python3 and run the following cmd)
 ```
-python3 hongtaiwang_readloginfo.py <host_addr> <username> <password>
+python3 readloginfo.py <host_addr> <username> <password>
 ```
 type in username if any.
 
