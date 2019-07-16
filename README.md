@@ -11,7 +11,7 @@ type in username if any.
 will show static image if timeinterval is less than or equal to 0.
 
 
-repo contains a sample topo graph and a log output
+**repo contains a sample topo graph and a log output
 
 ## part 2. app-hosting logs
 ### Input parameters: (install python3 and run the following cmd)
