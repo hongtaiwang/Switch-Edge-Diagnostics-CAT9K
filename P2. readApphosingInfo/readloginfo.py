@@ -69,12 +69,12 @@ def checkRunning(ioxInfo):
             return False
     return True
 
-# get app-hosting list
-def readAppList(tn, hostName):
-    # sh app list
-    tn.write("sh app-hosting list\n".encode('ascii'))
-    appList = tn.read_until((hostName + "#").encode('ascii')).decode()
-    return appList
+# get app-hosting list (for future use)
+#def readAppList(tn, hostName):
+#    # sh app list
+#    tn.write("sh app-hosting list\n".encode('ascii'))
+#    appList = tn.read_until((hostName + "#").encode('ascii')).decode()
+#    return appList
 
 
 # get app-hosting resource
@@ -115,10 +115,10 @@ def main():
     tn, hostName = connectHost(host, password, userName)
 
     #get app-hosting info
-    appInfo = readAppList(tn, hostName)
-    print("==========app-hosting list==========")
-    print(appInfo)
-    print("====================================\n")
+#    appInfo = readAppList(tn, hostName)
+#    print("==========app-hosting list==========")
+#    print(appInfo)
+#    print("====================================\n")
     resInfo = readAppRes(tn, hostName)
     ioxInfo = readIoxInfo(tn, hostName)
 
