@@ -1,4 +1,4 @@
-## Part 1. network-topo-GUI-based-on-cdp-info
+## Part 1. network topo GUI
 Telnet to target switch and generate the network topo image automatically. When dynamic showing graph, blue lines mean link-up during time interval and res lines mean link-down.
 
 ### Input parameters: (install python3 and run the following cmd)
