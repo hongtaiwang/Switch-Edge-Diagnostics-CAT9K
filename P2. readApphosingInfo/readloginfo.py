@@ -94,6 +94,9 @@ def readAppRes(tn, hostName):
 
     #parse Info
     resInfo = dict()
+
+    if len(appRes.split('\r\n')) < 9:
+        return resInfo
     cpuQuota = int(appRes.split('\r\n')[2].split(': ')[1].split('(')[0])
     cpuAvail = int(appRes.split('\r\n')[3].split(': ')[1].split('(')[0])
 
@@ -108,6 +111,32 @@ def readAppRes(tn, hostName):
     resInfo['Storage'] = [storageQuota, storageAvail]
 
     return resInfo
+
+''' functions to fix app-hosting issues
+# run IOX
+def runIox(tn, hostName):
+    tn.write("config term\n".encode('ascii'))
+    tn.read_until((hostName + "(config)#").encode('ascii')).decode()
+    tn.write("iox\n".encode('ascii'))
+    tn.read_until((hostName + "(config)#").encode('ascii')).decode()
+    tn.write("end\n".encode('ascii'))
+    tn.read_until((hostName + "#").encode('ascii')).decode()
+    print('iox is up!\n')
+    
+    
+# run app interface   
+def runAppInter(tn, hostName):
+    tn.write("config term\n".encode('ascii'))
+    tn.read_until((hostName + "(config)#").encode('ascii')).decode()
+    tn.write("inter appGigabit1/0/1\n".encode('ascii'))
+    tn.read_until((hostName + "(config-if)#").encode('ascii')).decode()
+    tn.write("no shutdown\n".encode('ascii'))
+    tn.read_until((hostName + "(config-if)#").encode('ascii')).decode()
+    tn.write("end\n".encode('ascii'))
+    tn.read_until((hostName + "#").encode('ascii')).decode()
+    print('app interface is up!\n')
+'''
+
 
 
 # input as <host> <username> <password>
