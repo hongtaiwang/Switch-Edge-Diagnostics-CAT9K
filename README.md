@@ -21,3 +21,5 @@ python readloginfo.py <host_addr> <username> <password>
 type in username if any.
 
 Will show app-hosting related info automatically
+
+Funtions to fix app-hosting issues also inluded in the .py file
