@@ -13,7 +13,7 @@ will show static image if timeinterval is less than or equal to 0.
 
 **repo contains a sample topo graph and a log output
 
-## Part 2. app-hosting logs
+## Part 2. app-hosting diagnostics
 ### Input parameters: (install python3 and run the following cmd)
 ```
 python readloginfo.py <host_addr> <username> <password>
