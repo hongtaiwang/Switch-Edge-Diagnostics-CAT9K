@@ -6,9 +6,9 @@ Telnet to target switch and generate the network topo image automatically. When 
 python switch2graph_log.py <host_addr> <username> <password> <timeinterval - sec>
 ```
   
-type in username if any.
+- type in username if any.
 
-will show static image if timeinterval is less than or equal to 0.
+- will show static image if timeinterval is less than or equal to 0.
 
 
 **repo contains a sample topo graph and a log output
@@ -18,8 +18,8 @@ will show static image if timeinterval is less than or equal to 0.
 ```
 python readloginfo.py <host_addr> <username> <password>
 ```
-type in username if any.
+- type in username if any.
 
-Will show app-hosting related info automatically
+- will show app-hosting related info automatically
 
-Funtions to fix app-hosting issues also inluded in the .py file
+- funtions to fix app-hosting issues also inluded in the .py file
