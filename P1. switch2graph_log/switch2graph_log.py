@@ -124,7 +124,7 @@ def updateEdges(edges, edges_cmp, edge_dict):
 
 def printInfo(edges, edges_up=[], edges_down=[], fileOuput=False):
     print(str(datetime.datetime.now()) + ': ')
-    for e in edges:
+    for e in (edges - set(edges_down)):
         print(e[0] + ":" + e[2] + ' <-> ' + e[1] + ":" + e[3])
     for e in edges_up:
         print(e[0] + ":" + e[2] + ' <-> ' + e[1] + ":" + e[3] + '---up')
@@ -144,7 +144,7 @@ def printInfo(edges, edges_up=[], edges_down=[], fileOuput=False):
 
 
 # input as <host> <password> <timeinterval - sec>(static if 0)
-def main():
+def run():
     host = sys.argv[1]
     userName = None
     if len(sys.argv) > 4:
@@ -188,7 +188,7 @@ def main():
             try:
                 cdpInfo_cmp = parseCdpInfo(cdpLog_cmp)
             except:
-                print(cdpLog_cmp)
+                pass
             edges_cmp, edge_attr_cmp = processEdges(cdpInfo_cmp)
             edges_up, edges_down, edge_dict = updateEdges(edges, edges_cmp, edge_dict)
 
@@ -231,4 +231,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run()
