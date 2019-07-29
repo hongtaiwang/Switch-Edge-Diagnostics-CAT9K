@@ -15,7 +15,6 @@ class CustomDialog(QDialog):
 
         self.setWindowTitle("Fix it")
 
-
         QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 
         self.buttonBox = QDialogButtonBox(QBtn)
