@@ -1,5 +1,5 @@
 ## UI - MyApp
-Both two parts of diagnostics are integerated into the MyApp UI. Both could be run from UI or by python files directly.
+Both two parts of diagnostics are integrated into the MyApp UI. Both could be run from UI or by python files directly.
 Install python3 and pyqt5. Then run following command to open GUI window
 ```
 python MyApp
