@@ -1,3 +1,10 @@
+## UI - MyApp
+Install python3 and pyqt5. Then run following command to open GUI window
+```
+python MyApp
+```
+Enter hostaddr, username, password respectively. Then click refresh.
+
 ## Part 1. network topo GUI
 Telnet to target switch and generate the network topo image automatically. When dynamic showing graph, blue lines mean link-up during time interval and res lines mean link-down.
 
