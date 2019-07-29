@@ -32,7 +32,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # set up UI
         self.setupUi(self)
-        self.setWindowTitle("Switch Diagnostic")
+        self.setWindowTitle("Edge Diagnostics For CAT9K")
         #connect button to function on_click
         self.pushButton.clicked.connect(self.on_click)
 
