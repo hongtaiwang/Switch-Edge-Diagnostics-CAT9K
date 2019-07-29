@@ -7,7 +7,7 @@ import datetime
 import time
 
 
-class cdpDiag():
+class cdpDiag:
     def __init__(self, args=None):
         if args is None:
             self.host = None
@@ -81,13 +81,13 @@ class cdpDiag():
         tn.read_until((hostName + "#").encode('ascii'))
 
         self.hostName = hostName
-        #print("connected!")
+        # print("connected!")
         return tn
 
-    def readCdpInfo(self, tn, hostName):
+    def readCdpInfo(self, tn):
         # show cdp neighbour
         tn.write("sh cdp neigh\n".encode('ascii'))
-        cdpLog = tn.read_until((hostName + "#").encode('ascii')).decode().splitlines()[6:]
+        cdpLog = tn.read_until((self.hostName + "#").encode('ascii')).decode().splitlines()[6:]
 
         return cdpLog
 
@@ -184,7 +184,7 @@ class cdpDiag():
     # input as <host> <password> <timeinterval - sec>(static if 0)
     def run(self):
         tn = self.connectHost(self.host, self.password, self.userName)
-        cdpLog = self.readCdpInfo(tn, self.hostName)
+        cdpLog = self.readCdpInfo(tn)
 
         # close connection
         tn.close()
