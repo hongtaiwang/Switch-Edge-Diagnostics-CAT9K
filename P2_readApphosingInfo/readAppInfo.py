@@ -89,7 +89,9 @@ class AppHosting:
         return True
 
     # check whether app is running
-    def checkAppg(self):
+    def checkApp(self):
+        if len(self.appListInfo) == 0:
+            return True
         for i in self.appListInfo:
             if self.appListInfo[i] == 'Running':
                 continue
@@ -184,6 +186,14 @@ class AppHosting:
             self.outputlog = self.outputlog + "no app is running!\n"
         self.outputlog = self.outputlog + "==============================\n\n"
 
+        # app-interface
+        self.outputlog = self.outputlog + "============app interface==========\n"
+        if self.checkAppInter():
+            self.outputlog = self.outputlog + "Up!\n"
+        else:
+            self.outputlog = self.outputlog + "Down!\n"
+        self.outputlog = self.outputlog + "==============================\n\n"
+
     # run IOX
     def runIox(self):
         tn = self.connectHost(self.host, self.password, self.userName)
@@ -196,18 +206,27 @@ class AppHosting:
         tn.close()
         print('iox is up!\n')
 
+    # check app interface status
+    def checkAppInter(self):
+        tn = self.connectHost(self.host, self.password, self.userName)
+        tn.write("sh ip interface br\n".encode('ascii'))
+        log = tn.read_until((self.hostName + "#").encode('ascii')).decode().split("\r\n")
+        tn.close()
+        for i in log:
+            if i[:2] == "Ap":
+                return i.split()[-2] == "up"
 
     # run app interface
     def runAppInter(self):
         tn = self.connectHost(self.host, self.password, self.userName)
         tn.write("config term\n".encode('ascii'))
-        tn.read_until((self.hostName + "(config)#").encode('ascii')).decode()
+        tn.read_until("(config)#".encode('ascii'))
         tn.write("inter appGigabit1/0/1\n".encode('ascii'))
-        tn.read_until((self.hostName + "(config-if)#").encode('ascii')).decode()
+        tn.read_until("(config-if)#".encode('ascii'))
         tn.write("no shutdown\n".encode('ascii'))
-        tn.read_until((self.hostName + "(config-if)#").encode('ascii')).decode()
+        tn.read_until("(config-if)#".encode('ascii'))
         tn.write("end\n".encode('ascii'))
-        tn.read_until((self.hostName + "#").encode('ascii')).decode()
+        tn.read_until((self.hostName + "#").encode('ascii'))
         print('app interface is up!\n')
         tn.close()
 
