@@ -5,7 +5,9 @@ Install python3 and pyqt5. Then run following command to open GUI window
 ```
 python MyApp.py
 ```
-Enter hostaddr, username, password respectively. Then click refresh. Network topo will be stored as a .png file and the log as LogInfo.txt in the same dir.
+ - Enter hostaddr, username, password respectively. Then click refresh. 
+ - Network topo will be stored as a .png file and the log as LogInfo.txt in the same dir.
+ - The green button means no err, and the red ones means issue exists. Click on the red button, then the program will fix the issue by itself.
 
 ## Part 1. network topo GUI
 Telnet to target switch and generate the network topo image automatically. When dynamic showing graph, blue lines mean link-up during time interval and res lines mean link-down.
