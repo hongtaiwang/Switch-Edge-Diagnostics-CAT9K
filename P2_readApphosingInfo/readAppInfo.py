@@ -3,7 +3,7 @@ import telnetlib
 import datetime
 import time
 import re
-
+import os
 
 class AppHosting:
     def __init__(self, args=None):
@@ -22,6 +22,11 @@ class AppHosting:
         self.appListInfo = dict()
         self.resInfo = dict()
         self.ioxInfo = dict()
+
+        # delete previous file if it exists
+        if os.path.exists('./LogInfo.txt'):
+            print("removed")
+            os.remove('./LogInfo.txt')
 
     def connectHost(self, host, psw, userName=None):
         # connect to switch
@@ -193,6 +198,9 @@ class AppHosting:
         else:
             self.outputlog = self.outputlog + "Down!\n"
         self.outputlog = self.outputlog + "==============================\n\n"
+        with open("LogInfo.txt", "a") as f:
+            f.write(self.outputlog)
+
 
     # run IOX
     def runIox(self):
@@ -233,9 +241,13 @@ class AppHosting:
 
 # input as <host> <username> <password>
 def main():
-    diag = AppHosting(sys.argv)
-    diag.printLog()
-    print(diag.outputlog)
+    if len(sys.argv) is 4:
+        sys.argv.append("0")
+        diag = AppHosting(sys.argv)
+        diag.printLog()
+        print(diag.outputlog)
+    else:
+        print("invalid input!")
 
 
 if __name__ == "__main__":
