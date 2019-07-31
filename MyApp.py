@@ -78,6 +78,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def on_click(self):
+        if not self.input_host.text():
+            return
         self.hostName = self.input_host.text()
         self.userName = self.input_user.text()
         self.psw = self.input_psw.text()
@@ -113,6 +115,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.button_runningapp.setStyleSheet("* { background-color: rgb(220,20,60) }")
             self.button_usb.setStyleSheet("* { background-color: rgb(220,20,60) }")
             self.button_iox.pressed.connect(lambda: self.onMyToolBarButtonClick())
+
+        # app interface
         if self.appDiagObj.checkAppInter():
             self.button_inter.setStyleSheet("* { background-color: rgb(124,252,0) }")
         else:
