@@ -37,9 +37,9 @@ class cdpDiag:
         self.outputlog = ""
 
         # delete previous file if it exists
-        if os.path.exists('./cdpInfo.txt'):
+        if os.path.exists('./LogInfo.txt'):
             print("removed")
-            os.remove('./cdpInfo.txt')
+            os.remove('./LogInfo.txt')
 
     def connectHost(self, host, psw, userName=None):
         # connect to switch
@@ -163,7 +163,7 @@ class cdpDiag:
             print(e[0] + ":" + e[2] + ' <-> ' + e[1] + ":" + e[3] + '---down')
         print('\n')
         if fileOuput:
-            with open("cdpInfo.txt", "a") as f:
+            with open("LogInfo.txt", "a") as f:
                 f.write(str(datetime.datetime.now()) + ': \n')
                 for e in edges:
                     if self.edge_dict[e] is 1:
