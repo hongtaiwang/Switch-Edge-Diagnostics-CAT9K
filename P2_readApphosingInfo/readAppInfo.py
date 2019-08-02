@@ -128,14 +128,25 @@ class AppHosting:
 
         if len(appRes.split('\r\n')) < 9:
             return resInfo
-        cpuQuota = int(appRes.split('\r\n')[2].split(': ')[1].split('(')[0])
-        cpuAvail = int(appRes.split('\r\n')[3].split(': ')[1].split('(')[0])
 
-        memQuota = int(appRes.split('\r\n')[5].split(': ')[1].split('(')[0])
-        memAvail = int(appRes.split('\r\n')[6].split(': ')[1].split('(')[0])
-
-        storageQuota = int(appRes.split('\r\n')[8].split(': ')[1].split('(')[0])
-        storageAvail = int(appRes.split('\r\n')[9].split(': ')[1].split('(')[0])
+        i = 0
+        while i < len(appRes.split('\r\n')):
+            if appRes.split('\r\n')[i] == "CPU:":
+                i += 1
+                cpuQuota = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+                i += 1
+                cpuAvail = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+            elif appRes.split('\r\n')[i] == "Memory:":
+                i += 1
+                memQuota = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+                i += 1
+                memAvail = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+            elif appRes.split('\r\n')[i] == "Storage space:":
+                i += 1
+                storageQuota = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+                i += 1
+                storageAvail = int(appRes.split('\r\n')[i].split(': ')[1].split('(')[0])
+            i += 1
 
         self.resInfo['CPU'] = [cpuQuota, cpuAvail]
         self.resInfo['Memory'] = [memQuota, memAvail]
@@ -186,7 +197,9 @@ class AppHosting:
         # app-hosting list
         self.outputlog = self.outputlog + "==========app-hosting list==========\n"
         if len(self.appListInfo):
-            self.outputlog = self.outputlog + self.appListInfo
+            for i in self.appListInfo:
+                self.outputlog = self.outputlog + i + ' : '
+                self.outputlog = self.outputlog + self.appListInfo[i] + '\n'
         else:
             self.outputlog = self.outputlog + "no app is running!\n"
         self.outputlog = self.outputlog + "==============================\n\n"
