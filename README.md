@@ -18,9 +18,11 @@ Telnet to target switch and generate the network topo image automatically. When 
 python switch2graph_log.py <host_addr> <username> <password> <ena-password> <timeinterval - sec>
 ```
   
-- type in enable password if any.
+- Type in enable password if any.
 
-- will show static image if timeinterval is less than or equal to 0.
+- Will show static image if timeinterval is less than or equal to 0.
+
+- Output files stored under the same path as the script file
 
 
 **repo contains a sample topo graph and a log output
@@ -30,8 +32,10 @@ python switch2graph_log.py <host_addr> <username> <password> <ena-password> <tim
 ```
 python readloginfo.py <host_addr> <username> <password> <ena-password>
 ```
-- type in enable password if any.
+- Type in enable password if any.
 
-- will show app-hosting related info automatically
+- Will show app-hosting related info automatically
 
-- funtions to fix app-hosting issues also inluded in the .py file
+- Funtions to fix app-hosting issues also inluded in the .py file
+
+- Output file stored under the same path as the script file
