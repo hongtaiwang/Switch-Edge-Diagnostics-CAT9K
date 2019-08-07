@@ -55,6 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.hostName = ""
         self.userName = ""
         self.psw = ""
+        self.enapsw = ""
         self.intv = ""
 
         self.diagObj = diag.cdpDiag()
@@ -83,7 +84,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.hostName = self.input_host.text()
         self.userName = self.input_user.text()
         self.psw = self.input_psw.text()
-        args = [" ", self.hostName, self.userName, self.psw, 0]
+        self.enapsw = self.input_ena.text()
+        if len(self.enapsw) == 0:
+            args = [" ", self.hostName, self.userName, self.psw, None, 0]
+        else:
+            args = [" ", self.hostName, self.userName, self.psw, self.enapsw, 0]
+        print("11111111111")
         if self.diagObj.host is None:
             self.diagObj = diag.cdpDiag(args)
             self.appDiagObj = appDiag.AppHosting(args)
