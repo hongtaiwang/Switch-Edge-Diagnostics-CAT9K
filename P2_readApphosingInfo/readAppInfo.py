@@ -11,12 +11,16 @@ class AppHosting:
             self.host = None
             return
         self.host = args[1]
-        self.userName = None
-        if len(args) > 4:
+        self.enaPassword = None
+
+        if len(args) > 5:
             self.userName = args[2]
             self.password = args[3]
+            self.enaPassword = args[4]
         else:
-            self.password = args[2]
+            self.userName = args[2]
+            self.password = args[3]
+
         self.hostName = ""
         self.outputlog = ""
         self.appListInfo = dict()
@@ -28,7 +32,7 @@ class AppHosting:
             print("removed")
             os.remove('./LogInfo.txt')
 
-    def connectHost(self, host, psw, userName=None):
+    def connectHost(self, host, psw, userName, returnHostName=False):
         # connect to switch
         while True:
             try:
@@ -40,24 +44,24 @@ class AppHosting:
                 pass
 
         # input username, if any
-        if userName is not None:
-            tn.read_until("Username: ".encode('ascii'))
-            userName += '\n'
-            tn.write(userName.encode('ascii'))
+        tn.read_until("Username: ".encode('ascii'))
+        userName += '\n'
+        tn.write(userName.encode('ascii'))
 
         # input password
         password = psw + '\n'
         tn.read_until("Password: ".encode('ascii'))
         tn.write(password.encode('ascii'))
 
-        if userName is None:
+        if self.enaPassword is not None:
             # get host name
             hostName = tn.read_until(">".encode('ascii')).decode().split('\r\n')[1].split(">")[0]
 
             # enable
             tn.write("enable\n".encode('ascii'))
             tn.read_until("Password: ".encode('ascii'))
-            tn.write(password.encode('ascii'))
+            self.enaPassword = self.enaPassword + '\n'
+            tn.write(self.enaPassword.encode('ascii'))
             tn.read_until((hostName + "#").encode('ascii'))
         else:
             # get host name
@@ -67,10 +71,9 @@ class AppHosting:
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
 
-        self.hostName = hostName
-        # print("connected!")
-        return tn
+        #print("connected!")
 
+        return tn
 
     # get iox-service info
     def readIoxInfo(self, tn):
@@ -233,6 +236,8 @@ class AppHosting:
         tn.write("sh ip interface br\n".encode('ascii'))
         log = tn.read_until((self.hostName + "#").encode('ascii')).decode().split("\r\n")
         tn.close()
+        print("read:\n")
+        print(log)
         for i in log:
             if i[:2] == "Ap":
                 return i.split()[-2] == "up"
@@ -254,7 +259,7 @@ class AppHosting:
 
 # input as <host> <username> <password>
 def main():
-    if len(sys.argv) is 4:
+    if len(sys.argv) is 4 or len(sys.argv) is 5:
         sys.argv.append("0")
         diag = AppHosting(sys.argv)
         diag.printLog()
