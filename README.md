@@ -5,7 +5,8 @@ Install python3 and pyqt5. Then run following command to open GUI window
 ```
 python MyApp.py
 ```
- - Enter hostaddr, username, password respectively. Then click refresh. 
+ - Should set username, password and vty tunnel for the switch before using this tool
+ - Enter hostaddr, username, password, enable password (if any) respectively. Then click refresh. 
  - Network topo will be stored as a .png file and the log as LogInfo.txt in the same dir.
  - The green button means no err, and the red ones means issue exists. Click on the red button, then the program will fix the issue by itself.
 
@@ -14,10 +15,10 @@ Telnet to target switch and generate the network topo image automatically. When 
 
 ### Input parameters: (install python3 and run the following cmd)
 ```
-python switch2graph_log.py <host_addr> <username> <password> <timeinterval - sec>
+python switch2graph_log.py <host_addr> <username> <password> <ena-password> <timeinterval - sec>
 ```
   
-- type in username if any.
+- type in enable password if any.
 
 - will show static image if timeinterval is less than or equal to 0.
 
@@ -27,9 +28,9 @@ python switch2graph_log.py <host_addr> <username> <password> <timeinterval - sec
 ## Part 2. app-hosting diagnostics
 ### Input parameters: (install python3 and run the following cmd)
 ```
-python readloginfo.py <host_addr> <username> <password>
+python readloginfo.py <host_addr> <username> <password> <ena-password>
 ```
-- type in username if any.
+- type in enable password if any.
 
 - will show app-hosting related info automatically
 
