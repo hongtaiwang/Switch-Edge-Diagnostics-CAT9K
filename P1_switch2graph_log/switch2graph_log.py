@@ -13,12 +13,14 @@ class cdpDiag:
             self.host = None
             return
         self.host = args[1]
-        self.userName = None
-        if len(args) > 4:
+        self.enaPassword = None
+        if len(args) > 5:
             self.userName = args[2]
             self.password = args[3]
+            self.enaPassword = args[4]
         else:
-            self.password = args[2]
+            self.userName = args[2]
+            self.password = args[3]
         self.hostName = ""
 
         self.cdp_Info = []
@@ -41,7 +43,7 @@ class cdpDiag:
             print("removed")
             os.remove('./LogInfo.txt')
 
-    def connectHost(self, host, psw, userName=None):
+    def connectHost(self, host, psw, userName, returnHostName=False):
         # connect to switch
         while True:
             try:
@@ -53,24 +55,24 @@ class cdpDiag:
                 pass
 
         # input username, if any
-        if userName is not None:
-            tn.read_until("Username: ".encode('ascii'))
-            userName += '\n'
-            tn.write(userName.encode('ascii'))
+        tn.read_until("Username: ".encode('ascii'))
+        userName += '\n'
+        tn.write(userName.encode('ascii'))
 
         # input password
         password = psw + '\n'
         tn.read_until("Password: ".encode('ascii'))
         tn.write(password.encode('ascii'))
 
-        if userName is None:
+        if self.enaPassword is not None:
             # get host name
             hostName = tn.read_until(">".encode('ascii')).decode().split('\r\n')[1].split(">")[0]
 
             # enable
             tn.write("enable\n".encode('ascii'))
             tn.read_until("Password: ".encode('ascii'))
-            tn.write(password.encode('ascii'))
+            self.enaPassword = self.enaPassword + '\n'
+            tn.write(self.enaPassword.encode('ascii'))
             tn.read_until((hostName + "#").encode('ascii'))
         else:
             # get host name
@@ -80,8 +82,8 @@ class cdpDiag:
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
 
-        self.hostName = hostName
-        # print("connected!")
+        print("connected!")
+
         return tn
 
     def readCdpInfo(self, tn):
@@ -261,10 +263,10 @@ class cdpDiag:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 4:
-        timeIntv = int(sys.argv[4])
+    if len(sys.argv) > 5:
+        timeIntv = int(sys.argv[5])
     else:
-        timeIntv = int(sys.argv[3])
+        timeIntv = int(sys.argv[4])
     diag = cdpDiag(sys.argv)
     diag.run()
     if timeIntv > 0:
