@@ -67,12 +67,12 @@ class AppHosting:
             # get host name
             hostName = tn.read_until("#".encode('ascii')).decode().split('\r\n')[1].split("#")[0]
 
+        self.hostName = hostName
         # term len 0
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
 
         #print("connected!")
-
         return tn
 
     # get iox-service info
@@ -236,8 +236,6 @@ class AppHosting:
         tn.write("sh ip interface br\n".encode('ascii'))
         log = tn.read_until((self.hostName + "#").encode('ascii')).decode().split("\r\n")
         tn.close()
-        print("read:\n")
-        print(log)
         for i in log:
             if i[:2] == "Ap":
                 return i.split()[-2] == "up"
