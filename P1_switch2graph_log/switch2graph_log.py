@@ -78,6 +78,7 @@ class cdpDiag:
             # get host name
             hostName = tn.read_until("#".encode('ascii')).decode().split('\r\n')[1].split("#")[0]
 
+        self.hostName = hostName
         # term len 0
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
