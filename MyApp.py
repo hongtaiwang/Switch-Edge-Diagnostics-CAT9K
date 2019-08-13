@@ -120,6 +120,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.button_iox.setStyleSheet("* { background-color: rgb(220,20,60) }")
             self.button_runningapp.setStyleSheet("* { background-color: rgb(220,20,60) }")
             self.button_usb.setStyleSheet("* { background-color: rgb(220,20,60) }")
+            try:
+                self.button_iox.pressed.disconnect()
+            except Exception:
+                pass
             self.button_iox.pressed.connect(lambda: self.onMyToolBarButtonClick())
 
         # app interface
@@ -127,6 +131,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.button_inter.setStyleSheet("* { background-color: rgb(124,252,0) }")
         else:
             self.button_inter.setStyleSheet("* { background-color: rgb(220,20,60) }")
+            try:
+                self.button_inter.pressed.disconnect()
+            except Exception:
+                pass
             self.button_inter.pressed.connect(lambda: self.onMyToolBarButtonClick_inter())
 
 
