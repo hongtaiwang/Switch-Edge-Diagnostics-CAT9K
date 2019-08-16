@@ -70,7 +70,7 @@ class AppHosting:
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
 
-        print("connected!")
+        # print("connected!")
 
         return tn
 
