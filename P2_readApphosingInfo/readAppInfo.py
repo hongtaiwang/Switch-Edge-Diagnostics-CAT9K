@@ -12,27 +12,28 @@ class AppHosting:
             return
         self.host = args[1]
         self.enaPassword = None
-
         if len(args) > 5:
             self.userName = args[2]
-            self.password = args[3]
-            self.enaPassword = args[4]
+            self.password = args[3] + '\n'
+            self.enaPassword = args[4] + '\n'
         else:
             self.userName = args[2]
-            self.password = args[3]
-
+            self.password = args[3] + '\n'
         self.hostName = ""
+
         self.outputlog = ""
         self.appListInfo = dict()
         self.resInfo = dict()
         self.ioxInfo = dict()
+        self.appIntr = ""
+        self.appInterStat = True
 
         # delete previous file if it exists
         if os.path.exists('./LogInfo.txt'):
             print("removed")
             os.remove('./LogInfo.txt')
 
-    def connectHost(self, host, psw, userName, returnHostName=False):
+    def connectHost(self, host, userName, returnHostName=False):
         # connect to switch
         while True:
             try:
@@ -49,9 +50,8 @@ class AppHosting:
         tn.write(userName.encode('ascii'))
 
         # input password
-        password = psw + '\n'
         tn.read_until("Password: ".encode('ascii'))
-        tn.write(password.encode('ascii'))
+        tn.write(self.password.encode('ascii'))
 
         if self.enaPassword is not None:
             # get host name
@@ -59,8 +59,6 @@ class AppHosting:
 
             # enable
             tn.write("enable\n".encode('ascii'))
-            tn.read_until("Password: ".encode('ascii'))
-            self.enaPassword = self.enaPassword + '\n'
             tn.write(self.enaPassword.encode('ascii'))
             tn.read_until((hostName + "#").encode('ascii'))
         else:
@@ -72,7 +70,8 @@ class AppHosting:
         tn.write("term len 0\n".encode('ascii'))
         tn.read_until((hostName + "#").encode('ascii'))
 
-        #print("connected!")
+        print("connected!")
+
         return tn
 
     # get iox-service info
@@ -157,12 +156,48 @@ class AppHosting:
 
         return self.resInfo
 
+    # run IOX
+    def runIox(self):
+        tn = self.connectHost(self.host, self.userName)
+        tn.write("config term\n".encode('ascii'))
+        tn.read_until("(config)#".encode('ascii'))
+        tn.write("iox\n".encode('ascii'))
+        tn.read_until("(config)#".encode('ascii'))
+        tn.write("end\n".encode('ascii'))
+        tn.read_until((self.hostName + "#").encode('ascii'))
+        tn.close()
+        print('iox is up!\n')
+
+    # check app interface status
+    def checkAppInter(self, tn):
+        tn.write("sh ip interface br\n".encode('ascii'))
+        log = tn.read_until((self.hostName + "#").encode('ascii')).decode().split("\r\n")
+        for i in log:
+            if i[:2] == "Ap":
+                self.appIntr = i.strip().split(' ')[0]
+                return i.split()[-2] == "up"
+
+    # run app interface
+    def runAppInter(self):
+        tn = self.connectHost(self.host, self.userName)
+        tn.write("config term\n".encode('ascii'))
+        tn.read_until("(config)#".encode('ascii'))
+        tn.write("inter {}\n".format(self.appIntr).encode('ascii'))
+        tn.read_until("(config-if)#".encode('ascii'))
+        tn.write("no shutdown\n".encode('ascii'))
+        tn.read_until("(config-if)#".encode('ascii'))
+        tn.write("end\n".encode('ascii'))
+        tn.read_until((self.hostName + "#").encode('ascii'))
+        print('app interface is up!\n')
+        tn.close()
+
     # print log
     def printLog(self):
-        tn = self.connectHost(self.host, self.password, self.userName)
+        tn = self.connectHost(self.host, self.userName)
         self.readAppList(tn)
         self.readAppRes(tn)
         self.readIoxInfo(tn)
+        self.appInterStat = self.checkAppInter(tn)
         tn.close()
 
         self.outputlog = "\n" + str(datetime.datetime.now()) + ': \n'
@@ -209,50 +244,13 @@ class AppHosting:
 
         # app-interface
         self.outputlog = self.outputlog + "============app interface==========\n"
-        if self.checkAppInter():
+        if self.appInterStat:
             self.outputlog = self.outputlog + "Up!\n"
         else:
             self.outputlog = self.outputlog + "Down!\n"
         self.outputlog = self.outputlog + "==============================\n\n"
         with open("LogInfo.txt", "a") as f:
             f.write(self.outputlog)
-
-
-    # run IOX
-    def runIox(self):
-        tn = self.connectHost(self.host, self.password, self.userName)
-        tn.write("config term\n".encode('ascii'))
-        tn.read_until("(config)#".encode('ascii'))
-        tn.write("iox\n".encode('ascii'))
-        tn.read_until("(config)#".encode('ascii'))
-        tn.write("end\n".encode('ascii'))
-        tn.read_until((self.hostName + "#").encode('ascii'))
-        tn.close()
-        print('iox is up!\n')
-
-    # check app interface status
-    def checkAppInter(self):
-        tn = self.connectHost(self.host, self.password, self.userName)
-        tn.write("sh ip interface br\n".encode('ascii'))
-        log = tn.read_until((self.hostName + "#").encode('ascii')).decode().split("\r\n")
-        tn.close()
-        for i in log:
-            if i[:2] == "Ap":
-                return i.split()[-2] == "up"
-
-    # run app interface
-    def runAppInter(self):
-        tn = self.connectHost(self.host, self.password, self.userName)
-        tn.write("config term\n".encode('ascii'))
-        tn.read_until("(config)#".encode('ascii'))
-        tn.write("inter appGigabit1/0/1\n".encode('ascii'))
-        tn.read_until("(config-if)#".encode('ascii'))
-        tn.write("no shutdown\n".encode('ascii'))
-        tn.read_until("(config-if)#".encode('ascii'))
-        tn.write("end\n".encode('ascii'))
-        tn.read_until((self.hostName + "#").encode('ascii'))
-        print('app interface is up!\n')
-        tn.close()
 
 
 # input as <host> <username> <password>
