@@ -16,11 +16,11 @@ class cdpDiag:
         self.enaPassword = None
         if len(args) > 5:
             self.userName = args[2]
-            self.password = args[3]
-            self.enaPassword = args[4]
+            self.password = args[3] + '\n'
+            self.enaPassword = args[4] + '\n'
         else:
             self.userName = args[2]
-            self.password = args[3]
+            self.password = args[3] + '\n'
         self.hostName = ""
 
         self.cdp_Info = []
@@ -43,7 +43,7 @@ class cdpDiag:
             print("removed")
             os.remove('./LogInfo.txt')
 
-    def connectHost(self, host, psw, userName, returnHostName=False):
+    def connectHost(self, host,userName,returnHostName=False):
         # connect to switch
         while True:
             try:
@@ -60,9 +60,8 @@ class cdpDiag:
         tn.write(userName.encode('ascii'))
 
         # input password
-        password = psw + '\n'
         tn.read_until("Password: ".encode('ascii'))
-        tn.write(password.encode('ascii'))
+        tn.write(self.password.encode('ascii'))
 
         if self.enaPassword is not None:
             # get host name
@@ -70,8 +69,6 @@ class cdpDiag:
 
             # enable
             tn.write("enable\n".encode('ascii'))
-            tn.read_until("Password: ".encode('ascii'))
-            self.enaPassword = self.enaPassword + '\n'
             tn.write(self.enaPassword.encode('ascii'))
             tn.read_until((hostName + "#").encode('ascii'))
         else:
@@ -127,6 +124,15 @@ class cdpDiag:
             if len(cdpLine) == 6:
                 cdpInfo.append(cdpLine)
                 cdpLine = []
+
+        # separate devices with the same name
+        deviceNames = dict()
+        for i in cdpInfo:
+            if (i[-2], i[-1]) in deviceNames:
+                deviceNames[(i[-2], i[-1])] += 1
+                i[-2] = i[-2] + '-' + str(deviceNames[(i[-2], i[-1])])
+            else:
+                deviceNames[(i[-2], i[-1])] = 0
 
         return cdpInfo
 
@@ -186,7 +192,7 @@ class cdpDiag:
 
     # input as <host> <password> <timeinterval - sec>(static if 0)
     def run(self):
-        tn = self.connectHost(self.host, self.password, self.userName)
+        tn = self.connectHost(self.host, self.userName)
         cdpLog = self.readCdpInfo(tn)
 
         # close connection
