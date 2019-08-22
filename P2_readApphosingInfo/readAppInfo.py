@@ -15,7 +15,8 @@ class AppHosting:
         if len(args) > 5:
             self.userName = args[2]
             self.password = args[3] + '\n'
-            self.enaPassword = args[4] + '\n'
+            if args[4] is not None:
+                self.enaPassword = args[4] + '\n'
         else:
             self.userName = args[2]
             self.password = args[3] + '\n'
@@ -83,7 +84,10 @@ class AppHosting:
         for info in ioxLog.split('\r\n')[4:]:
             if len(info) < 1:
                 break
-            self.ioxInfo[info.split(' :')[0]] = info.split(' :')[1].strip()
+            service = info.split(' :')[0].strip()
+            if service == 'IOx service (HA)' or service == 'Application DB Sync Info':
+                continue
+            self.ioxInfo[service] = info.split(' :')[1].strip()
         return self.ioxInfo
 
     # check whether iox running
