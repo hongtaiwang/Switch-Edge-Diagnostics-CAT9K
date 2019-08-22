@@ -17,7 +17,8 @@ class cdpDiag:
         if len(args) > 5:
             self.userName = args[2]
             self.password = args[3] + '\n'
-            self.enaPassword = args[4] + '\n'
+            if args[4] is not None:
+                self.enaPassword = args[4] + '\n'
         else:
             self.userName = args[2]
             self.password = args[3] + '\n'
@@ -27,6 +28,7 @@ class cdpDiag:
         self.cdp_Info_cmp = []
 
         self.edge_dict = dict()
+        self.edge_map = dict()
 
         self.edges = set()
         self.edge_attr = dict()
@@ -127,12 +129,24 @@ class cdpDiag:
 
         # separate devices with the same name
         deviceNames = dict()
+        for e in self.edge_map:
+            if self.edge_map[e][0] != e[-2]:
+                if deviceNames.get(e) is not None:
+                    deviceNames[e[-2], e[-1]] = max(deviceNames[e[-2]], int(self.edge_map[e][-2].split('-')[-1]))
+                else:
+                    deviceNames[e[-2], e[-1]] = int(self.edge_map[e][-2].split('-')[-1])
         for i in cdpInfo:
+            e = (i[0], i[1], i[-2], i[-1])
             if (i[-2], i[-1]) in deviceNames:
-                deviceNames[(i[-2], i[-1])] += 1
-                i[-2] = i[-2] + '-' + str(deviceNames[(i[-2], i[-1])])
+                if e not in self.edge_map:
+                    deviceNames[i[-2], i[-1]] += 1
+                    i[-2] = i[-2] + '-' + str(deviceNames[(i[-2], i[-1])])
+                    self.edge_map[e] = (i[-2], i[-1])
+                else:
+                    i[-2], i[-1] = self.edge_map[e][-2], self.edge_map[e][-1]
             else:
                 deviceNames[(i[-2], i[-1])] = 0
+                self.edge_map[e] = (i[-2], i[-1])
 
         return cdpInfo
 
