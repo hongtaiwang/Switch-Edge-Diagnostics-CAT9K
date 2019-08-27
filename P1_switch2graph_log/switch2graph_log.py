@@ -232,7 +232,7 @@ class cdpDiag:
 
             # save file
             fig = plt.gcf()
-            fig.set_size_inches(8, 8)
+            fig.set_size_inches(9, 9)
             fig.savefig('./cdp_image_log.png', dpi=100)
             self.printInfo(self.edges, fileOuput=True)
             plt.clf()
@@ -271,7 +271,7 @@ class cdpDiag:
                 nx.draw_networkx_edges(self.G, pos, edgelist=edges_down, width=4, edge_color='r')
 
             fig = plt.gcf()
-            fig.set_size_inches(8, 8)
+            fig.set_size_inches(9, 9)
 
             fileName = './cdp_image_log.png'
 
