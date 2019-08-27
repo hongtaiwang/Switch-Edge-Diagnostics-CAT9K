@@ -121,16 +121,20 @@ class Ui_MainWindow(object):
         self.input_ena.setObjectName("input_ena")
         self.gridLayout.addWidget(self.input_ena, 0, 4, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1021, 26))
         self.menubar.setObjectName("menubar")
         self.menuDiagnostic = QtWidgets.QMenu(self.menubar)
         self.menuDiagnostic.setObjectName("menuDiagnostic")
+        self.menuInterfaces = QtWidgets.QMenu(self.menuDiagnostic)
+        self.menuInterfaces.setObjectName("menuInterfaces")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.menubar.addAction(self.menuDiagnostic.menuAction())
+        self.menuDiagnostic.addAction(self.menuInterfaces.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -144,7 +148,7 @@ class Ui_MainWindow(object):
         self.button_runningapp.setText(_translate("MainWindow", "Running-app"))
         self.button_iox.setText(_translate("MainWindow", "IOX-Service"))
         self.menuDiagnostic.setTitle(_translate("MainWindow", "Diagnostic"))
-
+        self.menuInterfaces.setTitle(_translate("MainWindow", "Interfaces"))
 
 if __name__ == "__main__":
     import sys
